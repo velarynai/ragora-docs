@@ -1,0 +1,89 @@
+{
+  "constants": {
+    "minimumPayoutUSD": 10.00,
+    "vectorBonusPer10USD": 1000,
+    "vectorBonusMaxVectors": 100000,
+    "vectorAddonPriceMonthly": 99.99,
+    "vectorAddonVectors": 150000,
+    "vectorAddonMaxBlocks": 10,
+    "vectorsPerPage": 1.5,
+    "estimatedMessagesPerDollar": 800
+  },
+  "tiers": {
+    "free": {
+      "id": "free",
+      "name": "Free",
+      "description": "For hobbyists and testing",
+      "price": "$0",
+      "priceMonthly": 0,
+      "limits": {
+        "baseVectors": 3000,
+        "retrievalsPerDay": 200,
+        "audioVideoMinutes": 30,
+        "monthlyLLMCreditsUSD": 0.50
+      },
+      "platformFeePercent": 20,
+      "transactionFeeFlat": 0.50,
+      "features": [
+        "~2,000 pages of knowledge storage",
+        "200 Retrievals/day",
+        "30 min Audio/Video",
+        "~400 AI messages/mo",
+        "20% Platform Fee + $0.50/tx",
+        "Community Support",
+        "Storage grows as you sell"
+      ],
+      "llmMarkupPercent": 10
+    },
+    "pro": {
+      "id": "pro",
+      "name": "Pro",
+      "description": "For developers and teams",
+      "price": "$19.99",
+      "priceMonthly": 19.99,
+      "inheritsFrom": "free",
+      "limits": {
+        "baseVectors": 30000,
+        "retrievalsPerDay": -1,
+        "audioVideoMinutes": 300,
+        "monthlyLLMCreditsUSD": 2.50
+      },
+      "platformFeePercent": 20,
+      "transactionFeeFlat": 0.50,
+      "features": [
+        "~20,000 pages of knowledge storage",
+        "Unlimited Retrievals",
+        "Data connectors included",
+        "Slack and Discord ingestion and retrieval",
+        "300 min Audio/Video",
+        "~2,000 AI messages/mo",
+        "Priority Support",
+        "Scale with Data Blocks"
+      ],
+      "llmMarkupPercent": 10
+    },
+    "enterprise": {
+      "id": "enterprise",
+      "name": "Enterprise",
+      "description": "Dedicated infrastructure for scale",
+      "price": "Custom",
+      "priceMonthly": -1,
+      "comingSoon": true,
+      "limits": {
+        "baseVectors": -1,
+        "retrievalsPerDay": -1,
+        "audioVideoMinutes": -1,
+        "monthlyLLMCreditsUSD": 0
+      },
+      "platformFeePercent": 20,
+      "transactionFeeFlat": 0.50,
+      "features": [
+        "Unlimited pages",
+        "Unlimited Audio/Video",
+        "Dedicated Support + SLA"
+      ],
+      "llmMarkupPercent": 10
+    }
+  },
+  "order": ["free", "pro", "enterprise"]
+}
