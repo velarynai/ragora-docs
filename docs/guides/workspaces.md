@@ -9,7 +9,7 @@ Workspaces are the core unit of Ragora. Each workspace holds a set of documents 
 
 ## Navigating to Workspaces
 
-Click **Workspaces** in the sidebar or go to `/kb`. This page lists all workspaces you own or have purchased access to.
+Click **Workspaces** in the sidebar or go to <a className="btn-inline" href="https://ragora.app/kb">Workspaces &rarr;</a> This page lists all workspaces you own or have purchased access to.
 
 The list page has two tabs:
 - **My Workspaces** — workspaces you created
@@ -42,7 +42,7 @@ The workspace is created as **Private** by default. You can publish it to the ma
 
 ## Workspace Detail Page
 
-Open a workspace by clicking its card. The detail page (`/kb/[slug]`) has a split layout:
+Open a workspace by clicking its card. The detail page <a className="btn-inline" href="https://ragora.app/kb">Workspace Dashboard &rarr;</a> has a split layout:
 
 | Panel | Purpose |
 |-------|---------|

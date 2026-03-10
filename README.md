@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="static/img/logo.svg" alt="Ragora" width="80" />
+  <img src="static/img/logo.png" alt="Ragora" width="80" />
 </p>
 
 <h1 align="center">Ragora Docs</h1>

@@ -161,7 +161,7 @@ Pre-built prompts are available for common workflows:
 
 Make your collections easier for AI to discover:
 
-1. Open a workspace from **Workspaces** (`/kb`)
+1. Open a workspace from **Workspaces** <a className="btn-inline" href="https://ragora.app/kb">Workspaces &rarr;</a>
 2. Open workspace settings
 3. Set a **Tool Prefix** (e.g., `employee_handbook`)
 4. Add a **Description** (helps the AI understand when to use it)

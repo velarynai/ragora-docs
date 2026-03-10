@@ -11,8 +11,8 @@ Connect chat platform bots to your Ragora workspaces. Bots can sync channel mess
 
 Click **Integrations** in the sidebar or go to `/integrations`. The page has two tabs:
 
-- **Bot Integrations** (`/integrations?tab=bots`) — connect Discord and Slack bots
-- **Data Sources** (`/integrations?tab=sources`) — connect external data sources (see [Adding Data](/docs/guides/adding-data#connect-external-data-sources))
+- **Bot Integrations** <a className="btn-inline" href="https://ragora.app/integrations?tab=bots">Bot Integrations &rarr;</a> — connect Discord and Slack bots
+- **Data Sources** <a className="btn-inline" href="https://ragora.app/integrations?tab=sources">Data Sources &rarr;</a> — connect external data sources (see [Adding Data](/docs/guides/adding-data#connect-external-data-sources))
 
 ---
 

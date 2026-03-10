@@ -17,7 +17,7 @@ Ragora supports 3 install modes:
 
 ### 1. Create a Widget Key
 
-Open the Ragora dashboard and go to **Settings** → **Widget** (`/settings?tab=widget`).
+Open the Ragora dashboard and go to **Settings** → **Widget** <a className="btn-inline" href="https://ragora.app/settings?tab=widget">Widget Settings &rarr;</a>.
 
 Create a widget key with:
 

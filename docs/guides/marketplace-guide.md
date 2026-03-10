@@ -86,7 +86,7 @@ Turn your workspaces into products that others can discover and purchase.
 
 ### Publishing a Workspace
 
-1. Go to **Workspaces** (`/kb`)
+1. Go to **Workspaces** <a className="btn-inline" href="https://ragora.app/kb">Workspaces &rarr;</a>
 2. Open the workspace you want to sell
 3. Click the **Publish** button in the header
 4. Fill in the publish form:

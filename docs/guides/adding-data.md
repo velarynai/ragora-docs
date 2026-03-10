@@ -226,7 +226,7 @@ Choose the type that best matches your content. The dropdown is organized into c
 
 For **recurring sync** from external services, use Data Sources under Integrations.
 
-1. Go to **Integrations** → **Data Sources** (`/integrations?tab=sources`)
+1. Go to **Integrations** → **Data Sources** <a className="btn-inline" href="https://ragora.app/integrations?tab=sources">Data Sources &rarr;</a>
 2. Click **Add Data Source**
 3. Select a provider
 

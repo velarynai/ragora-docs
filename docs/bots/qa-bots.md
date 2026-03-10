@@ -31,7 +31,7 @@ Server-side note:
 
 ## Quick Setup for First Bot Answer
 
-1. Install bot from **Integrations** → **Bot Integrations** (`/integrations?tab=bots`)
+1. Install bot from **Integrations** → **Bot Integrations** <a className="btn-inline" href="https://ragora.app/integrations?tab=bots">Bot Integrations &rarr;</a>
 2. Set destination workspace
 3. Add watched channels
 4. Ensure channels are active

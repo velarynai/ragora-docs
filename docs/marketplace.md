@@ -52,7 +52,7 @@ Turn your knowledge into revenue by creating and selling products.
 
 ### Getting Started
 
-1. Go to **Workspaces** (`/kb`), open a workspace
+1. Go to **Workspaces** <a className="btn-inline" href="https://ragora.app/kb">Workspaces &rarr;</a>, open a workspace
 2. Click the publish/marketplace option to list your workspace as a product
 3. Configure your product:
    - Name and description
@@ -119,7 +119,7 @@ When someone purchases your product:
 
 To receive payouts, connect your Stripe account:
 
-1. Go to **Settings** (`/settings`)
+1. Go to **Settings** <a className="btn-inline" href="https://ragora.app/settings">Settings &rarr;</a>
 2. Click **Connect Stripe Account**
 3. Complete Stripe's onboarding
 4. Your bank account is now linked
@@ -130,7 +130,7 @@ To receive payouts, connect your Stripe account:
 
 ### Updating Your Product
 
-1. Go to **Workspaces** (`/kb`)
+1. Go to **Workspaces** <a className="btn-inline" href="https://ragora.app/kb">Workspaces &rarr;</a>
 2. Open the workspace associated with your product
 3. Edit description, pricing, or category from the settings
 4. Click **Save Changes**

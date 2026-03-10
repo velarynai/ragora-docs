@@ -25,7 +25,7 @@ flowchart LR
 | Goal | Use this path | Where |
 |------|----------------|-------|
 | Import GitHub content once | GitHub ingest tab | Workspace page |
-| Keep source continuously synced | Connectors sync source | **Integrations** → **Data Sources** |
+| Keep source continuously synced | Connectors sync source | **Integrations** → **Data Sources** <a className="btn-inline" href="https://ragora.app/integrations?tab=sources">Data Sources &rarr;</a> |
 
 If you only need a one-time import, see [Getting Started](/docs/getting-started) → Step 3C (GitHub Tab).
 
@@ -57,7 +57,7 @@ This is the only fully functional connector in the current UI. It crawls a websi
 
 ### Step 1: Source Configuration
 
-1. Go to **Integrations** → **Data Sources** (`/integrations?tab=sources`)
+1. Go to **Integrations** → **Data Sources** <a className="btn-inline" href="https://ragora.app/integrations?tab=sources">Data Sources &rarr;</a>
 2. Click **Add Data Source**
 3. Select **Docs Website** from the provider picker
 4. Enter the **Root URL** to crawl
@@ -117,7 +117,7 @@ These providers appear in the Data Sources dialog but are currently disabled wit
 
 Use this when you do not need schedules:
 
-1. Open your workspace from **Workspaces** (`/kb`)
+1. Open your workspace from **Workspaces** <a className="btn-inline" href="https://ragora.app/kb">Workspaces &rarr;</a>
 2. Choose destination workspace
 3. Open **GitHub** tab
 4. Paste repo/folder/file URL

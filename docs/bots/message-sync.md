@@ -35,7 +35,7 @@ Use this page for ingestion/sync controls. Q&A answer behavior is covered in [Q&
 
 ## Installation Flow
 
-1. Go to **Integrations** → **Bot Integrations** (`/integrations?tab=bots`)
+1. Go to **Integrations** → **Bot Integrations** <a className="btn-inline" href="https://ragora.app/integrations?tab=bots">Bot Integrations &rarr;</a>
 2. Select a destination workspace from the dropdown in the connect area
 3. Click the platform card (Discord or Slack) to begin the OAuth flow
 4. Complete OAuth on the platform

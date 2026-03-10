@@ -7,6 +7,13 @@ const config: Config = {
   tagline: 'AI-powered knowledge search platform',
   favicon: 'img/favicon.ico',
 
+  stylesheets: [
+    {
+      href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap',
+      type: 'text/css',
+    },
+  ],
+
   future: {
     v4: true,
   },
@@ -125,7 +132,7 @@ const config: Config = {
       title: 'Ragora',
       logo: {
         alt: 'Ragora Logo',
-        src: 'img/logo.svg',
+        src: 'img/logo.png',
       },
       items: [
         {
@@ -201,11 +208,11 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Ragora. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Ragora`,
     },
     prism: {
       theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      darkTheme: prismThemes.oneDark,
       additionalLanguages: ['bash', 'json', 'python', 'go', 'typescript'],
     },
   } satisfies Preset.ThemeConfig,

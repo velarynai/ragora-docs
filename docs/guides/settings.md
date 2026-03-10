@@ -5,17 +5,17 @@ sidebar_position: 4
 description: "Configure your account, team, branding, API keys, and chat widget"
 ---
 
-The Settings page (`/settings`) contains all account and organization configuration. Access it by clicking **Settings** in the sidebar.
+The Settings page <a className="btn-inline" href="https://ragora.app/settings">Settings &rarr;</a> contains all account and organization configuration. Access it by clicking **Settings** in the sidebar.
 
 Settings is organized into five tabs, accessible via URL parameters:
 
 | Tab | URL | Purpose |
 |-----|-----|---------|
-| Profile | `/settings?tab=profile` | Account info and deletion |
-| Team | `/settings?tab=team` | Member management and invitations |
-| Branding | `/settings?tab=branding` | Organization appearance and public page |
-| API Keys | `/settings?tab=developer` | Manage API keys for programmatic access |
-| Widget | `/settings?tab=widget` | Create and configure chat widget keys |
+| Profile | <a className="btn-inline" href="https://ragora.app/settings?tab=profile">Profile &rarr;</a> | Account info and deletion |
+| Team | <a className="btn-inline" href="https://ragora.app/settings?tab=team">Team &rarr;</a> | Member management and invitations |
+| Branding | <a className="btn-inline" href="https://ragora.app/settings?tab=branding">Branding &rarr;</a> | Organization appearance and public page |
+| API Keys | <a className="btn-inline" href="https://ragora.app/settings?tab=developer">API Keys &rarr;</a> | Manage API keys for programmatic access |
+| Widget | <a className="btn-inline" href="https://ragora.app/settings?tab=widget">Widget &rarr;</a> | Create and configure chat widget keys |
 
 ---
 

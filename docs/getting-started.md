@@ -42,7 +42,7 @@ flowchart LR
 
 ## Step 2: Create Your First Workspace
 
-1. Open **Workspaces** from the sidebar (or navigate to `/kb`)
+1. Open **Workspaces** from the sidebar (or navigate to <a className="btn-inline" href="https://ragora.app/kb">Workspaces &rarr;</a>)
 2. Click **Create Workspace** in the header
 3. Enter a workspace name (description is optional)
 4. Click **Create**
@@ -56,7 +56,7 @@ Notes:
 
 ## Step 3: Choose How to Add Data
 
-Open your workspace (`/kb/[slug]`) and use the document manager to upload files, or go to **Integrations** → **Data Sources** (`/integrations?tab=sources`) for cloud connectors.
+Open your workspace (`/kb/[slug]`) and use the document manager to upload files, or go to **Integrations** → **Data Sources** <a className="btn-inline" href="https://ragora.app/integrations?tab=sources">Data Sources &rarr;</a> for cloud connectors.
 
 Ragora supports content in **100+ languages** — upload documents in any language and search across them with cross-language retrieval built in.
 
@@ -101,7 +101,7 @@ Important:
 
 Use **Data Sources** when you want scheduled sync from external services.
 
-1. Go to **Integrations** → **Data Sources** (`/integrations?tab=sources`)
+1. Go to **Integrations** → **Data Sources** <a className="btn-inline" href="https://ragora.app/integrations?tab=sources">Data Sources &rarr;</a>
 2. Connect provider account
 3. Create sync source
 4. Review preview
@@ -177,7 +177,7 @@ Tips:
 
 ## Step 6: Validate with Chat
 
-1. Open your workspace (`/kb/[slug]`)
+1. Open your workspace <a className="btn-inline" href="https://ragora.app/kb">Workspace Dashboard &rarr;</a>
 2. Use the **Knowledge Playground** on the right side of the page
 3. Ask representative questions
 4. Verify answer relevance and cited source quality
@@ -191,8 +191,8 @@ Validation checklist before production:
 
 ## Step 7: Create API Keys
 
-1. Open **Settings** from the sidebar (`/settings`)
-2. Go to the **API Keys** tab (`/settings?tab=developer`)
+1. Open **Settings** from the sidebar <a className="btn-inline" href="https://ragora.app/settings">Settings &rarr;</a>
+2. Go to the **API Keys** tab <a className="btn-inline" href="https://ragora.app/settings?tab=developer">API Keys &rarr;</a>
 3. Click **Create New Key**
 4. Copy and store the key securely
 

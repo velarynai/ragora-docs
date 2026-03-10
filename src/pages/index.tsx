@@ -1,8 +1,8 @@
 import React from 'react';
-import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
+import { BookIcon, CodeIcon, PlugIcon, MessageIcon, TagIcon, RobotIcon } from '../components/icons';
 import styles from './index.module.css';
 
 const projects = [
@@ -10,96 +10,145 @@ const projects = [
     title: 'Platform Docs',
     description: 'Getting started, features, integrations, and API reference for the Ragora platform.',
     link: '/docs/getting-started',
-    icon: '📚',
+    Icon: BookIcon,
   },
   {
     title: 'SDKs',
     description: 'Official Python and TypeScript clients for the Ragora API.',
     link: '/sdk/getting-started',
-    icon: '🔧',
+    Icon: CodeIcon,
   },
   {
     title: 'MCP Server',
     description: 'Connect Claude, Cursor, and other AI assistants to your Ragora knowledge base.',
     link: '/mcp-server/overview',
-    icon: '🔌',
+    Icon: PlugIcon,
   },
   {
     title: 'Chat Widget',
     description: 'Embed an AI chatbot on any website with one line of code.',
     link: '/widget/getting-started',
-    icon: '💬',
+    Icon: MessageIcon,
   },
   {
     title: 'GLiNER',
     description: 'HTTP inference server for named entity recognition using GLiNER models.',
     link: '/gliner/overview',
-    icon: '🏷️',
+    Icon: TagIcon,
   },
   {
     title: 'OpenClaw',
     description: 'Teach AI agents how to use Ragora via MCP or REST API.',
     link: '/openclaw/overview',
-    icon: '🤖',
+    Icon: RobotIcon,
   },
 ];
 
 function Hero() {
-  const {siteConfig} = useDocusaurusContext();
   return (
-    <header className={clsx('hero', styles.heroBanner)}>
-      <div className="container">
-        <h1 className="hero__title">{siteConfig.title}</h1>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--primary button--lg"
-            to="/docs/getting-started">
+    <header className={styles.hero}>
+      <div className={styles.heroGlow} />
+      <div className={styles.heroContent}>
+        <h1 className={styles.heroTitle}>
+          Build smarter apps with{' '}
+          <span className={styles.heroAccent}>AI-powered search</span>
+        </h1>
+        <p className={styles.heroSubtitle}>
+          Upload your documents, connect your data sources, and get instant semantic search and AI chat over your knowledge base.
+        </p>
+        <div className={styles.heroButtons}>
+          <Link className={styles.btnPrimary} to="/docs/getting-started">
             Get Started
           </Link>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/api/overview">
+          <Link className={styles.btnSecondary} to="/docs/api/overview">
             API Reference
           </Link>
+        </div>
+
+        <div className={styles.steps}>
+          <div className={styles.step}>
+            <div className={styles.stepNumber}>1</div>
+            <div className={styles.stepText}>Create a workspace</div>
+          </div>
+          <div className={styles.stepArrow}>&rarr;</div>
+          <div className={styles.step}>
+            <div className={styles.stepNumber}>2</div>
+            <div className={styles.stepText}>Upload your docs</div>
+          </div>
+          <div className={styles.stepArrow}>&rarr;</div>
+          <div className={styles.step}>
+            <div className={styles.stepNumber}>3</div>
+            <div className={styles.stepText}>Search &amp; chat</div>
+          </div>
         </div>
       </div>
     </header>
   );
 }
 
-function ProjectCard({title, description, link, icon}: {
+function Stats() {
+  return (
+    <section className={styles.stats}>
+      <div className="container">
+        <div className={styles.statsGrid}>
+          <div>
+            <div className={styles.statValue}>50+</div>
+            <div className={styles.statLabel}>File Types Supported</div>
+          </div>
+          <div>
+            <div className={styles.statValue}>100+</div>
+            <div className={styles.statLabel}>Languages</div>
+          </div>
+          <div>
+            <div className={styles.statValue}>&lt;1s</div>
+            <div className={styles.statLabel}>Search Latency</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ProjectCard({ title, description, link, Icon }: {
   title: string;
   description: string;
   link: string;
-  icon: string;
+  Icon: React.ComponentType<{ size?: number }>;
 }) {
   return (
-    <div className={clsx('col col--4', styles.projectCard)}>
-      <Link to={link} className={styles.cardLink}>
-        <div className={styles.card}>
-          <div className={styles.cardIcon}>{icon}</div>
-          <h3>{title}</h3>
-          <p>{description}</p>
+    <Link to={link} className={styles.cardLink}>
+      <div className={styles.card}>
+        <div className={styles.cardIcon}>
+          <Icon size={24} />
         </div>
-      </Link>
-    </div>
+        <div className={styles.cardTitle}>
+          {title}
+          <span className={styles.cardArrow}>&rarr;</span>
+        </div>
+        <p className={styles.cardDescription}>{description}</p>
+      </div>
+    </Link>
   );
 }
 
 export default function Home(): React.JSX.Element {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
   return (
-    <Layout
-      title="Home"
-      description={siteConfig.tagline}>
+    <Layout title="Home" description={siteConfig.tagline}>
       <Hero />
+      <Stats />
       <main>
         <section className={styles.projects}>
           <div className="container">
-            <div className="row">
+            <h2 className={styles.projectsTitle}>Explore the ecosystem</h2>
+            <p className={styles.projectsSubtitle}>
+              Everything you need to integrate Ragora into your stack.
+            </p>
+            <div className={styles.bentoGrid}>
               {projects.map((project, idx) => (
-                <ProjectCard key={idx} {...project} />
+                <div key={project.title} className={styles.bentoItem}>
+                  <ProjectCard {...project} />
+                </div>
               ))}
             </div>
           </div>
