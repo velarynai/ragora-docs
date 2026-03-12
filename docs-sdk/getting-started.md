@@ -43,4 +43,3 @@ const client = new RagoraClient({ apiKey: 'your-api-key' });
 
 - [Python SDK →](./python/installation)
 - [TypeScript SDK →](./typescript/installation)
-- [API Reference →](/docs/api/overview)

@@ -2,6 +2,7 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 
 const sidebars: SidebarsConfig = {
   docsSidebar: [
+    'intro',
     'getting-started',
     {
       type: 'category',
@@ -26,6 +27,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Integrations',
+      link: { type: 'doc', id: 'integrations/index' },
       items: [
         'integrations/mcp-guide',
         'integrations/connectors',
@@ -36,6 +38,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Bots',
+      link: { type: 'doc', id: 'bots/index' },
       items: [
         'bots/message-sync',
         'bots/qa-bots',
@@ -43,7 +46,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'API Reference',
+      label: 'SDK Reference',
       items: [
         'api/overview',
         'api/retrieve',

@@ -5,6 +5,9 @@ sidebar_position: 7
 description: "Browse, purchase, and sell products"
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 Browse, purchase, and sell knowledge products.
 
 ## Overview
@@ -18,10 +21,6 @@ The Marketplace API lets you browse public products, purchase access, and manage
 ### List Marketplace Products
 
 Browse public marketplace products.
-
-```
-GET /v1/marketplace
-```
 
 **Note:** This endpoint is public (authentication optional).
 
@@ -63,37 +62,31 @@ GET /v1/marketplace
 
 #### Example
 
-```bash
-# Search for API documentation products
-curl "https://api.ragora.app/v1/marketplace?search=api+documentation&sort=rating" \
-  -H "Authorization: Bearer sk_live_xxx"
-```
+<Tabs>
+  <TabItem value="python" label="Python" default>
 
 ```python
-import requests
-
-def search_marketplace(query: str, limit: int = 20):
-    response = requests.get(
-        "https://api.ragora.app/v1/marketplace",
-        headers={"Authorization": "Bearer sk_live_xxx"},
-        params={"search": query, "limit": limit, "sort": "rating"}
-    )
-    return response.json()["data"]
-
-products = search_marketplace("machine learning")
-for p in products:
-    print(f"{p['title']} - ${p['pricing']['price_usd']}/mo - ⭐{p['rating_avg']}")
+products = await client.list_marketplace(search="machine learning", limit=20, category="research")
+for p in products.data:
+    print(f"{p.title} - ⭐{p.average_rating}")
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+const products = await client.listMarketplace({ search: 'machine learning', limit: 20, category: 'research' });
+products.data.forEach(p => console.log(`${p.title} - ⭐${p.averageRating}`));
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
 ### Get Product Details
 
 Get full details of a marketplace product.
-
-```
-GET /v1/marketplace/{id}
-```
 
 The `{id}` can be the product ID or slug.
 
@@ -123,15 +116,36 @@ The `{id}` can be the product ID or slug.
 }
 ```
 
+#### Example
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+product = await client.get_marketplace_product("legal-templates")
+print(f"{product.title}: {product.description}")
+```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+const product = await client.getMarketplaceProduct('legal-templates');
+console.log(`${product.title}: ${product.description}`);
+```
+
+  </TabItem>
+</Tabs>
+
 ---
 
 ### Get Product Pricing
 
 Get pricing options for a product.
 
-```
-GET /v1/marketplace/{id}/pricing
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Response (200)
 
@@ -172,9 +186,9 @@ GET /v1/marketplace/{id}/pricing
 
 Activate access to a usage-based product (no upfront payment).
 
-```
-POST /v1/marketplace/activate
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Request Body
 
@@ -202,9 +216,9 @@ After activation, retrievals from this product will deduct credits from your bal
 
 Get reviews for a product.
 
-```
-GET /v1/products/{id}/reviews
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Query Parameters
 
@@ -241,9 +255,9 @@ GET /v1/products/{id}/reviews
 
 Leave a review for a product you have access to.
 
-```
-POST /v1/products/{id}/reviews
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Request Body
 
@@ -278,9 +292,9 @@ POST /v1/products/{id}/reviews
 
 Update your existing review.
 
-```
-PATCH /v1/products/{id}/reviews/{review_id}
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Request Body
 
@@ -295,9 +309,9 @@ PATCH /v1/products/{id}/reviews/{review_id}
 
 Delete your review.
 
-```
-DELETE /v1/products/{id}/reviews/{review_id}
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 ---
 
@@ -307,9 +321,9 @@ DELETE /v1/products/{id}/reviews/{review_id}
 
 Create a new product to sell on the marketplace.
 
-```
-POST /v1/products
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Request Body
 
@@ -347,9 +361,9 @@ Creating a product also creates an associated collection for storing documents. 
 
 List products you own.
 
-```
-GET /v1/products
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Response (200)
 
@@ -377,9 +391,9 @@ GET /v1/products
 
 List all products you have access to (owned, purchased, or pay-per-use activated).
 
-```
-GET /v1/products/accessible
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Response (200)
 
@@ -421,9 +435,9 @@ GET /v1/products/accessible
 
 Update product details.
 
-```
-PATCH /v1/products/{id}
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Request Body
 
@@ -439,9 +453,9 @@ PATCH /v1/products/{id}
 
 Delete a product.
 
-```
-DELETE /v1/products/{id}
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 **Warning:** This removes the product from the marketplace. Existing buyers retain access.
 
@@ -455,9 +469,9 @@ Set per-operation credit costs for pay-per-use access.
 
 ### Get Product Pricing
 
-```
-GET /v1/products/{id}/pricing
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 **Note:** This endpoint is public (no authentication required).
 
@@ -485,9 +499,9 @@ GET /v1/products/{id}/pricing
 
 Set custom pricing for your product.
 
-```
-PUT /v1/products/{id}/pricing
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Request Body
 
@@ -516,9 +530,9 @@ PUT /v1/products/{id}/pricing
 
 Add a pricing option to your product.
 
-```
-POST /v1/products/{id}/listings
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Request Body
 
@@ -592,9 +606,9 @@ POST /v1/products/{id}/listings
 
 Get all pricing options for your product.
 
-```
-GET /v1/products/{id}/listings
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 ---
 
@@ -602,9 +616,9 @@ GET /v1/products/{id}/listings
 
 Update pricing.
 
-```
-PATCH /v1/products/{id}/listings/{listing_id}
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 **Note:** Changes apply to new purchases only. Existing subscribers keep their rate.
 
@@ -614,9 +628,9 @@ PATCH /v1/products/{id}/listings/{listing_id}
 
 Remove a pricing option.
 
-```
-DELETE /v1/products/{id}/listings/{listing_id}
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 ---
 
@@ -626,9 +640,9 @@ DELETE /v1/products/{id}/listings/{listing_id}
 
 Check your earnings balance.
 
-```
-GET /v1/billing/seller/balance
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Response (200)
 
@@ -655,9 +669,9 @@ GET /v1/billing/seller/balance
 
 See earnings by product.
 
-```
-GET /v1/billing/seller/earnings
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Response (200)
 

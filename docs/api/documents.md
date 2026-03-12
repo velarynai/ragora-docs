@@ -5,6 +5,9 @@ sidebar_position: 4
 description: "Upload and manage documents"
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 Upload, manage, and monitor document processing.
 
 ## Overview
@@ -17,18 +20,7 @@ The Documents API lets you upload files, track processing status, manage version
 
 Upload a file for processing and indexing.
 
-```
-POST /v1/documents
-```
-
-### Headers
-
-| Header | Required | Description |
-|--------|----------|-------------|
-| `Authorization` | Yes | `Bearer sk_live_xxx` |
-| `Content-Type` | Yes | `multipart/form-data` |
-
-### Form Fields
+### Upload Options
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
@@ -84,73 +76,67 @@ If uploading a duplicate filename, the response indicates replacement:
 }
 ```
 
-### Example: cURL
+### Example
 
-```bash
-curl -X POST https://api.ragora.app/v1/documents \
-  -H "Authorization: Bearer sk_live_xxx" \
-  -F "file=@user-guide.pdf" \
-  -F "collection_id=docs" \
-  -F "domain=software_docs" \
-  -F "custom_tags=guide,v2.0"
-```
-
-### Example: Python
+<Tabs>
+  <TabItem value="python" label="Python" default>
 
 ```python
-import requests
+from ragora import RagoraClient
 
-def upload_document(file_path: str, collection_id: str):
-    with open(file_path, "rb") as f:
-        response = requests.post(
-            "https://api.ragora.app/v1/documents",
-            headers={"Authorization": "Bearer sk_live_xxx"},
-            files={"file": f},
-            data={
-                "collection_id": collection_id,
-                "domain": "software_docs"
-            }
-        )
-    response.raise_for_status()
-    return response.json()
+client = RagoraClient(api_key="sk_live_xxx")
 
-doc = upload_document("user-guide.pdf", "docs")
-print(f"Uploaded: {doc['id']} - Status: {doc['status']}")
+# Upload from file path
+upload = await client.upload_file(
+    file_path="./user-guide.pdf",
+    collection="docs",
+    domain="software_docs",
+    custom_tags=["guide", "v2.0"],
+    scan_mode="fast",
+)
+print(f"Uploaded: {upload.id} - Status: {upload.status}")
+
+# Or upload from bytes
+upload = await client.upload_document(
+    file_content=open("user-guide.pdf", "rb").read(),
+    filename="user-guide.pdf",
+    collection="docs",
+    domain="software_docs",
+)
 ```
 
-### Example: JavaScript
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
 
-```javascript
-async function uploadDocument(file, collectionId) {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("collection_id", collectionId);
+```typescript
+import { RagoraClient } from 'ragora';
+import { readFileSync } from 'fs';
 
-  const response = await fetch("https://api.ragora.app/v1/documents", {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer sk_live_xxx"
-    },
-    body: formData
-  });
+const client = new RagoraClient({ apiKey: 'sk_live_xxx' });
 
-  if (!response.ok) {
-    throw new Error(`Upload failed: ${response.status}`);
-  }
+// Upload from file path (Node.js)
+const upload = await client.uploadFile('./user-guide.pdf', 'docs');
 
-  return response.json();
-}
+// Or upload from buffer with options
+const upload = await client.uploadDocument({
+  file: readFileSync('./user-guide.pdf'),
+  filename: 'user-guide.pdf',
+  collection: 'docs',
+  domain: 'software_docs',
+  customTags: ['guide', 'v2.0'],
+  scanMode: 'fast',
+});
+console.log(`Uploaded: ${upload.id} - Status: ${upload.status}`);
 ```
+
+  </TabItem>
+</Tabs>
 
 ---
 
 ## List Documents
 
 List documents in a collection.
-
-```
-GET /v1/documents
-```
 
 ### Query Parameters
 
@@ -186,20 +172,39 @@ GET /v1/documents
 
 ### Example
 
-```bash
-curl "https://api.ragora.app/v1/documents?collection_id=docs&limit=20" \
-  -H "Authorization: Bearer sk_live_xxx"
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+from ragora import RagoraClient
+
+client = RagoraClient(api_key="sk_live_xxx")
+
+docs = await client.list_documents(collection="docs", limit=20, offset=0)
+for doc in docs.data:
+    print(f"{doc.filename} - {doc.status}")
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient({ apiKey: 'sk_live_xxx' });
+
+const docs = await client.listDocuments({ collection: 'docs', limit: 20, offset: 0 });
+docs.data.forEach(doc => console.log(`${doc.filename} - ${doc.status}`));
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
 ## Get Document Status
 
 Check processing status of a document.
-
-```
-GET /v1/documents/{id}/status
-```
 
 ### Response (200)
 
@@ -226,44 +231,40 @@ GET /v1/documents/{id}/status
 | `failed` | Processing failed (see `error` field) |
 | `unsupported` | File type is not supported |
 
-### Example: Polling
+### Example
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
 
 ```python
-import time
-import requests
+from ragora import RagoraClient
 
-def wait_for_processing(doc_id: str, timeout: int = 300):
-    start = time.time()
-    while time.time() - start < timeout:
-        response = requests.get(
-            f"https://api.ragora.app/v1/documents/{doc_id}/status",
-            headers={"Authorization": "Bearer sk_live_xxx"}
-        )
-        data = response.json()
+client = RagoraClient(api_key="sk_live_xxx")
 
-        if data["status"] == "completed":
-            return data
-        if data["status"] == "failed":
-            raise Exception(f"Processing failed: {data['error']}")
-
-        print(f"Progress: {data['progress_percent']:.1f}%")
-        time.sleep(2)
-
-    raise TimeoutError("Processing timed out")
-
-status = wait_for_processing("doc_abc123")
-print(f"Done! Created {status['chunks_created']} chunks")
+status = await client.get_document_status("doc_abc123")
+print(f"Status: {status.status}, Progress: {status.progress_percent}%")
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient({ apiKey: 'sk_live_xxx' });
+
+const status = await client.getDocumentStatus('doc_abc123');
+console.log(`Status: ${status.status}, Progress: ${status.progressPercent}%`);
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
 ## Stream Progress (SSE)
 
 Stream real-time processing updates via Server-Sent Events.
-
-```
-GET /v1/documents/{id}/progress
-```
 
 ### Response
 
@@ -278,53 +279,64 @@ event: complete
 data: {"chunks": 85, "status": "completed"}
 ```
 
-### Example: JavaScript
+### Example
 
-```javascript
-function watchProgress(docId, onProgress, onComplete) {
-  const eventSource = new EventSource(
-    `https://api.ragora.app/v1/documents/${docId}/progress`,
-    {
-      headers: { "Authorization": "Bearer sk_live_xxx" }
-    }
-  );
+The SDK provides `wait_for_document` / `waitForDocument`, which automatically polls for completion. For most use cases, this is simpler than consuming the SSE stream directly.
 
-  eventSource.addEventListener("progress", (e) => {
-    const data = JSON.parse(e.data);
-    onProgress(data.percent, data.chunks);
-  });
+<Tabs>
+  <TabItem value="python" label="Python" default>
 
-  eventSource.addEventListener("complete", (e) => {
-    const data = JSON.parse(e.data);
-    onComplete(data);
-    eventSource.close();
-  });
+```python
+from ragora import RagoraClient
 
-  eventSource.addEventListener("error", (e) => {
-    console.error("Stream error:", e);
-    eventSource.close();
-  });
+client = RagoraClient(api_key="sk_live_xxx")
 
-  return eventSource;
-}
+# Upload and wait for processing in one flow
+upload = await client.upload_file(
+    file_path="./user-guide.pdf",
+    collection="docs",
+)
 
-// Usage
-watchProgress(
-  "doc_abc123",
-  (percent, chunks) => console.log(`${percent}% - ${chunks} chunks`),
-  (data) => console.log("Complete!", data)
-);
+# Blocks until processing completes or times out
+status = await client.wait_for_document(
+    upload.id,
+    timeout=300.0,
+    poll_interval=2.0,
+)
+print(f"Status: {status.status}, Vectors: {status.vector_count}, Chunks: {status.chunk_count}")
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient({ apiKey: 'sk_live_xxx' });
+
+// Upload and wait for processing in one flow
+const upload = await client.uploadFile('./user-guide.pdf', 'docs');
+
+// Blocks until processing completes or times out
+const status = await client.waitForDocument(upload.id, {
+  timeout: 300000,
+  pollInterval: 2000,
+});
+console.log(`Status: ${status.status}, Vectors: ${status.vectorCount}, Chunks: ${status.chunkCount}`);
+```
+
+  </TabItem>
+</Tabs>
+
+:::tip
+The raw SSE endpoint (`GET /v1/documents/{id}/progress`) is still available for custom implementations that need granular real-time updates. See the endpoint details above for the event format.
+:::
 
 ---
 
 ## Get Transcript
 
 Get extracted text from a document (useful for audio/video).
-
-```
-GET /v1/documents/{id}/transcript
-```
 
 ### Response (200)
 
@@ -339,10 +351,34 @@ GET /v1/documents/{id}/transcript
 
 ### Example
 
-```bash
-curl "https://api.ragora.app/v1/documents/doc_abc123/transcript" \
-  -H "Authorization: Bearer sk_live_xxx"
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+from ragora import RagoraClient
+
+client = RagoraClient(api_key="sk_live_xxx")
+
+transcript = await client.get_transcript("doc_abc123")
+print(f"Language: {transcript.language}, Words: {transcript.word_count}")
+print(transcript.text)
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient({ apiKey: 'sk_live_xxx' });
+
+const transcript = await client.getTranscript('doc_abc123');
+console.log(`Language: ${transcript.language}, Words: ${transcript.wordCount}`);
+console.log(transcript.text);
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
@@ -350,21 +386,36 @@ curl "https://api.ragora.app/v1/documents/doc_abc123/transcript" \
 
 Download the original uploaded file.
 
-```
-GET /v1/documents/{id}/download
-```
-
-### Response
-
-Binary file with appropriate `Content-Type` and `Content-Disposition` headers.
-
 ### Example
 
-```bash
-curl "https://api.ragora.app/v1/documents/doc_abc123/download" \
-  -H "Authorization: Bearer sk_live_xxx" \
-  -o downloaded-file.pdf
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+from ragora import RagoraClient
+
+client = RagoraClient(api_key="sk_live_xxx")
+
+content = await client.download_document("doc_abc123")
+with open("downloaded-file.pdf", "wb") as f:
+    f.write(content)
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+import { writeFileSync } from 'fs';
+
+const client = new RagoraClient({ apiKey: 'sk_live_xxx' });
+
+const content = await client.downloadDocument('doc_abc123');
+writeFileSync('downloaded-file.pdf', Buffer.from(content));
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
@@ -372,20 +423,36 @@ curl "https://api.ragora.app/v1/documents/doc_abc123/download" \
 
 Remove a document and its associated chunks.
 
-```
-DELETE /v1/documents/{id}
-```
-
 ### Response (204)
 
 No content.
 
 ### Example
 
-```bash
-curl -X DELETE "https://api.ragora.app/v1/documents/doc_abc123" \
-  -H "Authorization: Bearer sk_live_xxx"
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+from ragora import RagoraClient
+
+client = RagoraClient(api_key="sk_live_xxx")
+
+await client.delete_document("doc_abc123")
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient({ apiKey: 'sk_live_xxx' });
+
+await client.deleteDocument('doc_abc123');
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
@@ -393,9 +460,9 @@ curl -X DELETE "https://api.ragora.app/v1/documents/doc_abc123" \
 
 Retry processing of a failed document.
 
-```
-POST /v1/documents/{id}/retry
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 ### Response (200)
 
@@ -415,9 +482,9 @@ Ragora tracks document versions when you re-upload files.
 
 ### List Versions
 
-```
-GET /v1/documents/{id}/versions
-```
+:::note
+Version management is available via the REST API. There are no dedicated SDK methods for these endpoints at this time.
+:::
 
 ### Response (200)
 
@@ -444,21 +511,11 @@ GET /v1/documents/{id}/versions
 
 ### Replace Document
 
-Upload a new version of an existing document:
-
-```
-PUT /v1/documents/{id}
-```
-
-Uses the same form fields as the upload endpoint.
+Upload a new version of an existing document. Uses the same form fields as the upload endpoint.
 
 ### Rollback Version
 
-Restore a previous version:
-
-```
-POST /v1/documents/{id}/rollback/{version}
-```
+Restore a previous version.
 
 ### Response (200)
 
@@ -473,11 +530,7 @@ POST /v1/documents/{id}/rollback/{version}
 
 ### Purge Old Versions
 
-Delete all old versions, keeping only the current one:
-
-```
-POST /v1/documents/{id}/purge
-```
+Delete all old versions, keeping only the current one.
 
 ---
 
@@ -509,6 +562,10 @@ POST /v1/documents/html
 }
 ```
 
+:::note
+URL import is available via the REST API. There is no dedicated SDK method for this endpoint at this time.
+:::
+
 ---
 
 ## Import YouTube Video
@@ -539,6 +596,10 @@ POST /v1/documents/youtube
   "duration_seconds": 212
 }
 ```
+
+:::note
+YouTube import is available via the REST API. There is no dedicated SDK method for this endpoint at this time.
+:::
 
 ---
 

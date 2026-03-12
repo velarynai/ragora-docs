@@ -5,14 +5,14 @@ sidebar_position: 7
 description: "Buy and sell knowledge products"
 ---
 
-Buy and sell knowledge products on the Ragora marketplace.
+The Ragora Marketplace is where knowledge becomes a product. Experts publish their curated workspaces — legal templates, API documentation, research papers, community archives — and other users or AI agents can search and retrieve from them. Sellers earn revenue on every access; buyers get instant, AI-searchable knowledge without building it themselves.
 
 ## Overview
 
-The Ragora Marketplace lets you:
+The Marketplace has two sides:
 
-- **As a Buyer**: Access high-quality workspaces curated by experts
-- **As a Seller**: Monetize your expertise by selling access to your knowledge
+- **As a Buyer**: Discover and access high-quality workspaces curated by domain experts. Search them via the API, MCP, or chat — just like your own workspaces.
+- **As a Seller**: Monetize your expertise by publishing workspaces with subscription, one-time, or pay-per-use pricing. Earn revenue when AI agents or users retrieve from your content.
 
 ---
 

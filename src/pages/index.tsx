@@ -61,7 +61,7 @@ function Hero() {
             Get Started
           </Link>
           <Link className={styles.btnSecondary} to="/docs/api/overview">
-            API Reference
+            SDK Reference
           </Link>
         </div>
 

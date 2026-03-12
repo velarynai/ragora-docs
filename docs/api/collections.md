@@ -5,6 +5,9 @@ sidebar_position: 5
 description: "Create and manage workspaces"
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 Create and manage workspace collections.
 
 ## Overview
@@ -17,18 +20,7 @@ Collections are containers for your documents. Each collection is a separate sea
 
 Create a new collection.
 
-```
-POST /v1/collections
-```
-
-### Headers
-
-| Header | Required | Description |
-|--------|----------|-------------|
-| `Authorization` | Yes | `Bearer sk_live_xxx` |
-| `Content-Type` | Yes | `application/json` |
-
-### Request Body
+### Parameters
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
@@ -56,52 +48,48 @@ POST /v1/collections
 }
 ```
 
-### Example: cURL
+### Example
 
-```bash
-curl -X POST https://api.ragora.app/v1/collections \
-  -H "Authorization: Bearer sk_live_xxx" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Product Documentation",
-    "slug": "product-docs",
-    "description": "All product manuals and user guides"
-  }'
-```
-
-### Example: Python
+<Tabs>
+  <TabItem value="python" label="Python" default>
 
 ```python
-import requests
+from ragora import RagoraClient
 
-def create_collection(name: str, description: str = None):
-    response = requests.post(
-        "https://api.ragora.app/v1/collections",
-        headers={
-            "Authorization": "Bearer sk_live_xxx",
-            "Content-Type": "application/json"
-        },
-        json={
-            "name": name,
-            "description": description
-        }
-    )
-    response.raise_for_status()
-    return response.json()
+client = RagoraClient()
 
-collection = create_collection("Support Articles", "Customer support workspace")
-print(f"Created collection: {collection['id']}")
+collection = await client.create_collection(
+    name="Product Documentation",
+    description="All product manuals and user guides",
+    slug="product-docs",
+)
+print(f"Created: {collection.id}")
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient();
+
+const collection = await client.createCollection({
+  name: 'Product Documentation',
+  description: 'All product manuals and user guides',
+  slug: 'product-docs',
+});
+console.log(`Created: ${collection.id}`);
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
 ## List Collections
 
 List all collections you have access to.
-
-```
-GET /v1/collections
-```
 
 ### Query Parameters
 
@@ -144,20 +132,39 @@ GET /v1/collections
 
 ### Example
 
-```bash
-curl "https://api.ragora.app/v1/collections?limit=50" \
-  -H "Authorization: Bearer sk_live_xxx"
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+from ragora import RagoraClient
+
+client = RagoraClient()
+
+collections = await client.list_collections(limit=50, offset=0, search="docs")
+for c in collections.data:
+    print(f"{c.name} - {c.total_documents} docs")
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient();
+
+const collections = await client.listCollections({ limit: 50, offset: 0, search: 'docs' });
+collections.data.forEach(c => console.log(`${c.name} - ${c.totalDocuments} docs`));
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
 ## Get Collection
 
 Get details of a specific collection.
-
-```
-GET /v1/collections/{id}
-```
 
 The `{id}` can be either the collection ID (`coll_abc123`) or slug (`product-docs`).
 
@@ -186,10 +193,32 @@ The `{id}` can be either the collection ID (`coll_abc123`) or slug (`product-doc
 
 ### Example
 
-```bash
-curl "https://api.ragora.app/v1/collections/product-docs" \
-  -H "Authorization: Bearer sk_live_xxx"
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+from ragora import RagoraClient
+
+client = RagoraClient()
+
+collection = await client.get_collection("product-docs")
+print(f"{collection.name} - {collection.total_documents} documents")
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient();
+
+const collection = await client.getCollection('product-docs');
+console.log(`${collection.name} - ${collection.totalDocuments} documents`);
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
@@ -197,11 +226,7 @@ curl "https://api.ragora.app/v1/collections/product-docs" \
 
 Update collection metadata.
 
-```
-PATCH /v1/collections/{id}
-```
-
-### Request Body
+### Parameters
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -216,25 +241,45 @@ Returns the updated collection object.
 
 ### Example
 
-```bash
-curl -X PATCH "https://api.ragora.app/v1/collections/coll_abc123" \
-  -H "Authorization: Bearer sk_live_xxx" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Product Documentation v2",
-    "description": "Updated documentation for version 2.0"
-  }'
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+from ragora import RagoraClient
+
+client = RagoraClient()
+
+updated = await client.update_collection(
+    "coll_abc123",
+    name="Product Documentation v2",
+    description="Updated documentation for version 2.0",
+)
+print(f"Updated: {updated.name}")
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient();
+
+const updated = await client.updateCollection('coll_abc123', {
+  name: 'Product Documentation v2',
+  description: 'Updated documentation for version 2.0',
+});
+console.log(`Updated: ${updated.name}`);
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
 ## Delete Collection
 
 Delete a collection and all its documents.
-
-```
-DELETE /v1/collections/{id}
-```
 
 **Warning:** This permanently deletes all documents and chunks in the collection.
 
@@ -244,10 +289,32 @@ No content.
 
 ### Example
 
-```bash
-curl -X DELETE "https://api.ragora.app/v1/collections/coll_abc123" \
-  -H "Authorization: Bearer sk_live_xxx"
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+from ragora import RagoraClient
+
+client = RagoraClient()
+
+await client.delete_collection("coll_abc123")
+print("Collection deleted")
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient();
+
+await client.deleteCollection('coll_abc123');
+console.log('Collection deleted');
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
@@ -255,9 +322,9 @@ curl -X DELETE "https://api.ragora.app/v1/collections/coll_abc123" \
 
 Get detailed statistics about a collection.
 
-```
-GET /v1/collections/{id}/stats
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 ### Response (200)
 
@@ -295,9 +362,9 @@ GET /v1/collections/{id}/stats
 
 Delete all failed documents in a collection.
 
-```
-DELETE /v1/collections/{id}/failed-files
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 ### Response (200)
 
@@ -314,9 +381,9 @@ DELETE /v1/collections/{id}/failed-files
 
 Delete all documents with unsupported file types.
 
-```
-DELETE /v1/collections/{id}/unsupported-files
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 ### Response (200)
 
@@ -333,13 +400,13 @@ DELETE /v1/collections/{id}/unsupported-files
 
 Get analytics for a collection. The `{id}` can be a collection ID, slug, or `all` to aggregate across all your collections.
 
+:::note
+Analytics endpoints are available via the REST API. There are no dedicated SDK methods at this time.
+:::
+
 ### Chunk Analytics
 
 See which chunks are most frequently retrieved:
-
-```
-GET /v1/collections/{id}/analytics/chunks
-```
 
 ### Response (200)
 
@@ -364,10 +431,6 @@ Returns top 50 most accessed chunks over the past 30 days.
 
 See which files are most accessed:
 
-```
-GET /v1/collections/{id}/analytics/files
-```
-
 ### Response (200)
 
 ```json
@@ -391,10 +454,6 @@ Returns top 50 most accessed files over the past 30 days.
 ### Query Analytics
 
 See search patterns and top queries:
-
-```
-GET /v1/collections/{id}/analytics/queries
-```
 
 ### Response (200)
 
@@ -432,10 +491,6 @@ GET /v1/collections/{id}/analytics/queries
 
 Get GraphRAG statistics for entity-enhanced search:
 
-```
-GET /v1/collections/{id}/analytics/graph
-```
-
 ### Response (200)
 
 ```json
@@ -457,61 +512,83 @@ GET /v1/collections/{id}/analytics/graph
 
 ### Complete Workflow
 
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
 ```python
-import requests
+import asyncio
+from ragora import RagoraClient
 
-API_KEY = "sk_live_xxx"
-BASE_URL = "https://api.ragora.app/v1"
-HEADERS = {"Authorization": f"Bearer {API_KEY}"}
+async def main():
+    client = RagoraClient()
 
-# 1. Create a collection
-collection = requests.post(
-    f"{BASE_URL}/collections",
-    headers={**HEADERS, "Content-Type": "application/json"},
-    json={"name": "My Workspace"}
-).json()
+    # 1. Create a collection
+    collection = await client.create_collection(
+        name="My Workspace",
+        description="Product documentation and guides",
+    )
+    print(f"Created: {collection.id}")
 
-print(f"Created: {collection['id']}")
+    # 2. Upload a document
+    doc = await client.upload_document(
+        collection_id=collection.id,
+        file_path="document.pdf",
+    )
+    print(f"Uploaded: {doc.id}")
 
-# 2. Upload documents
-with open("document.pdf", "rb") as f:
-    doc = requests.post(
-        f"{BASE_URL}/documents",
-        headers=HEADERS,
-        files={"file": f},
-        data={"collection_id": collection["id"]}
-    ).json()
+    # 3. Wait for processing
+    await client.wait_for_document(doc.id)
+    print("Processing complete")
 
-print(f"Uploaded: {doc['id']}")
+    # 4. Search the collection
+    results = await client.retrieve(
+        query="What is the main topic?",
+        collection_ids=[collection.id],
+    )
+    for result in results.results:
+        print(f"[{result.score:.2f}] {result.text[:100]}...")
 
-# 3. Wait for processing
-import time
-while True:
-    status = requests.get(
-        f"{BASE_URL}/documents/{doc['id']}/status",
-        headers=HEADERS
-    ).json()
-
-    if status["status"] == "completed":
-        break
-    if status["status"] == "failed":
-        raise Exception(status["error"])
-
-    time.sleep(2)
-
-# 4. Search the collection
-results = requests.post(
-    f"{BASE_URL}/retrieve",
-    headers={**HEADERS, "Content-Type": "application/json"},
-    json={
-        "query": "What is the main topic?",
-        "collection_ids": [collection["id"]]
-    }
-).json()
-
-for result in results["results"]:
-    print(f"[{result['score']:.2f}] {result['text'][:100]}...")
+asyncio.run(main())
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient();
+
+// 1. Create a collection
+const collection = await client.createCollection({
+  name: 'My Workspace',
+  description: 'Product documentation and guides',
+});
+console.log(`Created: ${collection.id}`);
+
+// 2. Upload a document
+const doc = await client.uploadDocument({
+  collectionId: collection.id,
+  filePath: 'document.pdf',
+});
+console.log(`Uploaded: ${doc.id}`);
+
+// 3. Wait for processing
+await client.waitForDocument(doc.id);
+console.log('Processing complete');
+
+// 4. Search the collection
+const results = await client.retrieve({
+  query: 'What is the main topic?',
+  collectionIds: [collection.id],
+});
+results.results.forEach(r => {
+  console.log(`[${r.score.toFixed(2)}] ${r.text.slice(0, 100)}...`);
+});
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 

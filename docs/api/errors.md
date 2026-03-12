@@ -5,11 +5,14 @@ sidebar_position: 8
 description: "Error handling and rate limits"
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 Handle errors and understand rate limiting.
 
 ## Error Format
 
-All API errors follow a consistent format:
+All errors follow a consistent format:
 
 ```json
 {
@@ -183,165 +186,220 @@ Rate limits protect the API from abuse and ensure fair usage.
 | Pro | 1,000 | Unlimited | 50 |
 | Enterprise | Custom | Unlimited | Custom |
 
-### Rate Limit Headers
-
-Every response includes rate limit information:
-
-| Header | Description |
-|--------|-------------|
-| `X-RateLimit-Limit` | Maximum requests allowed |
-| `X-RateLimit-Remaining` | Requests remaining in window |
-| `X-RateLimit-Reset` | Unix timestamp when limit resets |
-
-**Example Headers:**
-
-```
-X-RateLimit-Limit: 60
-X-RateLimit-Remaining: 45
-X-RateLimit-Reset: 1706745660
-```
-
 ### Handling Rate Limits
 
-When you receive a `429` response, wait before retrying:
+The SDK handles rate limits and retries automatically with exponential backoff. You can configure the retry behavior when initializing the client:
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
 
 ```python
-import time
-import requests
+from ragora import RagoraClient
 
-def make_request_with_retry(url, headers, json_data, max_retries=3):
-    for attempt in range(max_retries):
-        response = requests.post(url, headers=headers, json=json_data)
-
-        if response.status_code == 429:
-            retry_after = int(response.headers.get("Retry-After", 30))
-            print(f"Rate limited. Waiting {retry_after} seconds...")
-            time.sleep(retry_after)
-            continue
-
-        return response
-
-    raise Exception("Max retries exceeded")
+# SDK retries rate-limited and transient errors automatically
+client = RagoraClient(max_retries=5)  # default is 3
 ```
 
-### Exponential Backoff
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
 
-For production applications, use exponential backoff:
+```typescript
+import { RagoraClient } from 'ragora';
+
+// SDK retries rate-limited and transient errors automatically
+const client = new RagoraClient({ maxRetries: 5 }); // default is 3
+```
+
+  </TabItem>
+</Tabs>
+
+If you need to handle rate limit errors explicitly (e.g., to show a message to users), catch the `RateLimitError` exception:
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
 
 ```python
-import time
-import random
+from ragora import RagoraClient, RateLimitError
 
-def exponential_backoff(attempt, base_delay=1, max_delay=60):
-    delay = min(base_delay * (2 ** attempt), max_delay)
-    jitter = random.uniform(0, delay * 0.1)
-    return delay + jitter
-
-def make_request_with_backoff(url, headers, json_data, max_retries=5):
-    for attempt in range(max_retries):
-        response = requests.post(url, headers=headers, json=json_data)
-
-        if response.status_code == 429:
-            delay = exponential_backoff(attempt)
-            print(f"Rate limited. Retrying in {delay:.1f}s...")
-            time.sleep(delay)
-            continue
-
-        if response.status_code >= 500:
-            delay = exponential_backoff(attempt)
-            print(f"Server error. Retrying in {delay:.1f}s...")
-            time.sleep(delay)
-            continue
-
-        return response
-
-    raise Exception("Max retries exceeded")
+async with RagoraClient() as client:
+    try:
+        results = await client.search(query="...", collection="my-docs")
+    except RateLimitError as e:
+        print(f"Rate limited. Retry after {e.retry_after}s")
 ```
 
-### JavaScript Example
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
 
-```javascript
-async function fetchWithRetry(url, options, maxRetries = 3) {
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    const response = await fetch(url, options);
+```typescript
+import { RagoraClient, RateLimitError } from 'ragora';
 
-    if (response.status === 429) {
-      const retryAfter = parseInt(response.headers.get("Retry-After") || "30");
-      console.log(`Rate limited. Waiting ${retryAfter}s...`);
-      await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
-      continue;
-    }
+const client = new RagoraClient();
 
-    if (response.status >= 500) {
-      const delay = Math.min(1000 * Math.pow(2, attempt), 60000);
-      console.log(`Server error. Retrying in ${delay}ms...`);
-      await new Promise(resolve => setTimeout(resolve, delay));
-      continue;
-    }
-
-    return response;
+try {
+  const results = await client.search({ query: '...', collection: 'my-docs' });
+} catch (e) {
+  if (e instanceof RateLimitError) {
+    console.error(`Rate limited. Retry in ${e.retryAfter}s`);
   }
-
-  throw new Error("Max retries exceeded");
 }
 ```
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Error Handling
+
+The SDK provides typed exceptions for all API error categories. Use try/catch to handle errors gracefully:
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+from ragora import RagoraClient, RagoraException, AuthenticationError, RateLimitError, NotFoundError
+
+async with RagoraClient() as client:
+    try:
+        results = await client.search(query="...", collection="my-docs")
+    except AuthenticationError as e:
+        print(f"Invalid API key: {e.message}")
+    except RateLimitError as e:
+        print(f"Rate limited. Retry after {e.retry_after}s")
+    except NotFoundError as e:
+        print(f"Collection not found: {e.message}")
+    except RagoraException as e:
+        print(f"API error [{e.status_code}]: {e.message}")
+        print(f"Request ID: {e.request_id}")
+        if e.is_retryable:
+            print("This error is retryable")
+```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient, RagoraError, AuthenticationError, RateLimitError, NotFoundError } from 'ragora';
+
+const client = new RagoraClient();
+
+try {
+  const results = await client.search({ query: '...', collection: 'my-docs' });
+} catch (e) {
+  if (e instanceof AuthenticationError) {
+    console.error(`Invalid API key: ${e.message}`);
+  } else if (e instanceof RateLimitError) {
+    console.error(`Rate limited. Retry in ${e.retryAfter}s`);
+  } else if (e instanceof NotFoundError) {
+    console.error(`Not found: ${e.message}`);
+  } else if (e instanceof RagoraError) {
+    console.error(`API error [${e.statusCode}]: ${e.message}`);
+    console.error(`Request ID: ${e.requestId}`);
+    if (e.isRetryable) console.log('This error is retryable');
+  }
+}
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
 ## Best Practices
 
-### 1. Check for Errors
+### 1. Use Typed Error Handling
 
-Always check response status codes:
+Catch specific SDK exceptions to handle different error types appropriately:
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
 
 ```python
-response = requests.post(url, headers=headers, json=data)
+from ragora import RagoraException
 
-if not response.ok:
-    error = response.json().get("error", {})
-    print(f"Error {error.get('code')}: {error.get('message')}")
-    # Handle specific error codes
-    if error.get("code") == "INSUFFICIENT_FUNDS":
-        # Prompt user to add credits
-        pass
+try:
+    results = await client.search(query="...", collection="my-docs")
+except RagoraException as e:
+    if e.status_code == 402:
+        print("Insufficient credits. Add credits at https://ragora.app/billing")
+    else:
+        print(f"Error [{e.status_code}]: {e.message}")
 ```
 
-### 2. Implement Retries
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
 
-Implement automatic retries for transient errors:
+```typescript
+import { RagoraError } from 'ragora';
 
-- `429` - Rate limit exceeded
-- `500` - Internal server error
-- `503` - Service unavailable
+try {
+  const results = await client.search({ query: '...', collection: 'my-docs' });
+} catch (e) {
+  if (e instanceof RagoraError && e.statusCode === 402) {
+    console.error('Insufficient credits. Add credits at https://ragora.app/billing');
+  } else if (e instanceof RagoraError) {
+    console.error(`Error [${e.statusCode}]: ${e.message}`);
+  }
+}
+```
 
-### 3. Use Exponential Backoff
+  </TabItem>
+</Tabs>
 
-Increase delay between retries to avoid overwhelming the server.
+### 2. Retries Are Automatic
 
-### 4. Monitor Rate Limit Headers
+The SDK automatically retries transient errors (`429`, `500`, `503`) with exponential backoff. No manual retry logic is needed.
 
-Track your remaining requests to avoid hitting limits:
+### 3. Monitor Rate Limit Headers
+
+Track your remaining requests to proactively avoid hitting limits. Rate limit metadata is available on SDK responses:
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
 
 ```python
-remaining = int(response.headers.get("X-RateLimit-Remaining", 0))
-if remaining < 10:
+results = await client.search(query="...", collection="my-docs")
+if results.rate_limit_remaining < 10:
     print("Warning: Approaching rate limit")
 ```
 
-### 5. Handle Insufficient Credits
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
 
-Check your balance before making expensive operations:
+```typescript
+const results = await client.search({ query: '...', collection: 'my-docs' });
+if (results.rateLimitRemaining < 10) {
+  console.warn('Warning: Approaching rate limit');
+}
+```
+
+  </TabItem>
+</Tabs>
+
+### 4. Check Balance Before Expensive Operations
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
 
 ```python
-# Check balance first
-balance = requests.get(
-    "https://api.ragora.app/v1/credits/balance",
-    headers=headers
-).json()
-
-if balance["balance_usd"] < 1.0:
+balance = await client.get_balance()
+if balance.balance_usd < 1.0:
     print("Low balance. Add credits at https://ragora.app/billing")
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+const balance = await client.getBalance();
+if (balance.balanceUsd < 1.0) {
+  console.warn('Low balance. Add credits at https://ragora.app/billing');
+}
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
@@ -349,25 +407,30 @@ if balance["balance_usd"] < 1.0:
 
 ### Request ID
 
-Every response includes a unique request ID in the `X-Request-ID` header. Include this when contacting support:
+Every response includes a unique request ID. Include this when contacting support.
 
-```
-X-Request-ID: req_abc123xyz
-```
+The request ID is available on SDK exceptions via `e.request_id` (Python) or `e.requestId` (TypeScript).
 
-### Verbose Logging
+### Debug Mode
 
-Enable verbose logging to debug issues:
+Enable debug mode to log all requests and responses:
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
 
 ```python
-import logging
-import requests
-
-logging.basicConfig(level=logging.DEBUG)
-
-# This will log all request/response details
-response = requests.post(url, headers=headers, json=data)
+client = RagoraClient(debug=True)  # logs all requests
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+const client = new RagoraClient({ debug: true });
+```
+
+  </TabItem>
+</Tabs>
 
 ### Test Mode
 

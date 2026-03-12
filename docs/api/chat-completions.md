@@ -5,24 +5,14 @@ sidebar_position: 3
 description: "RAG-augmented chat with OpenAI compatibility and agentic multi-step retrieval"
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 RAG-augmented chat with OpenAI-compatible responses and optional session memory.
-
-## Endpoint
-
-```
-POST /v1/chat/completions
-```
 
 ## Request
 
-### Headers
-
-| Header | Required | Description |
-|--------|----------|-------------|
-| `Authorization` | Yes | `Bearer sk_live_xxx` |
-| `Content-Type` | Yes | `application/json` |
-
-### Body Parameters
+### Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -81,84 +71,222 @@ For stateful streams, `ragora_stats.conversation_id` is included in `ragora_meta
 
 ## Examples
 
-### 1) Stateless Simple Chat
+### 1) Simple Chat
 
-```bash
-curl -X POST https://api.ragora.app/v1/chat/completions \
-  -H "Authorization: Bearer sk_live_xxx" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "messages": [
-      {"role": "user", "content": "Summarize the onboarding docs"}
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+from ragora import RagoraClient
+
+client = RagoraClient()
+
+response = await client.chat(
+    messages=[
+        {"role": "user", "content": "Summarize the onboarding docs"},
     ],
-    "collection_ids": ["support-docs"]
-  }'
+    retrieval={"collection": "support-docs"},
+)
+print(response.choices[0].message.content)
+print(f"Sources: {len(response.sources)}")
 ```
 
-### 2) Stateful Agentic Chat (auto-agentic via `session=true`)
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
 
-```bash
-curl -X POST https://api.ragora.app/v1/chat/completions \
-  -H "Authorization: Bearer sk_live_xxx" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "messages": [
-      {"role": "user", "content": "Track my previous question context"}
-    ],
-    "collection_ids": ["support-docs"],
-    "session": true
-  }'
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient();
+
+const response = await client.chat({
+  messages: [
+    { role: 'user', content: 'Summarize the onboarding docs' },
+  ],
+  retrieval: { collection: 'support-docs' },
+});
+console.log(response.choices[0].message.content);
+console.log(`Sources: ${response.sources.length}`);
 ```
 
-### 3) Continue Existing Session
+  </TabItem>
+</Tabs>
 
-```bash
-curl -X POST https://api.ragora.app/v1/chat/completions \
-  -H "Authorization: Bearer sk_live_xxx" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "messages": [
-      {"role": "user", "content": "Now compare that with the enterprise plan"}
-    ],
-    "session_id": "4fe10c93-c5e2-4f07-bf03-b7835f4a130f"
-  }'
+### 2) Streaming Chat
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+from ragora import RagoraClient
+
+client = RagoraClient()
+
+async for chunk in client.chat_stream(
+    messages=[{"role": "user", "content": "Explain the return policy"}],
+    retrieval={"collection": "support-docs"},
+):
+    print(chunk.content, end="", flush=True)
+    if chunk.thinking:
+        print(f"\n[{chunk.thinking.type}] {chunk.thinking.message}")
+    if chunk.sources:
+        print(f"\nSources: {len(chunk.sources)}")
 ```
 
-### 4) Invalid Combination (`mode=simple` + `session`)
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
 
-```bash
-curl -X POST https://api.ragora.app/v1/chat/completions \
-  -H "Authorization: Bearer sk_live_xxx" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "mode": "simple",
-    "session": false,
-    "messages": [
-      {"role": "user", "content": "hello"}
-    ]
-  }'
-```
+```typescript
+import { RagoraClient } from 'ragora';
 
-Expected error:
+const client = new RagoraClient();
 
-```json
-{
-  "error": {
-    "code": "invalid_request",
-    "message": "mode \"simple\" cannot be used with session, session_id, or system_prompt"
+for await (const chunk of client.chatStream({
+  messages: [{ role: 'user', content: 'Explain the return policy' }],
+  retrieval: { collection: 'support-docs' },
+})) {
+  process.stdout.write(chunk.content);
+  if (chunk.thinking) {
+    console.log(`\n[${chunk.thinking.type}] ${chunk.thinking.message}`);
+  }
+  if (chunk.sources.length > 0) {
+    console.log(`\nSources: ${chunk.sources.length}`);
   }
 }
 ```
 
-### 5) Invalid Combination (`session=false` + `session_id`)
+  </TabItem>
+</Tabs>
 
-Expected error:
+### 3) Agentic Chat with Session
 
-```json
-{
-  "error": {
-    "code": "invalid_request",
-    "message": "session cannot be false when session_id is provided"
-  }
-}
+Setting `session=true` auto-routes to agentic mode. The response includes a `session_id` you can save for follow-up requests.
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+from ragora import RagoraClient
+
+client = RagoraClient()
+
+response = await client.chat(
+    messages=[{"role": "user", "content": "Track my previous question context"}],
+    retrieval={"collection": "support-docs"},
+    agentic={"mode": "agentic", "session": True},
+)
+print(response.choices[0].message.content)
+
+# Save the session ID for follow-up requests
+session_id = response.ragora.session_id
+print(f"Session ID: {session_id}")
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient();
+
+const response = await client.chat({
+  messages: [{ role: 'user', content: 'Track my previous question context' }],
+  retrieval: { collection: 'support-docs' },
+  agentic: { mode: 'agentic', session: true },
+});
+console.log(response.choices[0].message.content);
+
+// Save the session ID for follow-up requests
+const sessionId = response.ragora?.sessionId;
+console.log(`Session ID: ${sessionId}`);
+```
+
+  </TabItem>
+</Tabs>
+
+### 4) Continue Existing Session
+
+Pass a previously returned `session_id` to continue the conversation with full context.
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+from ragora import RagoraClient
+
+client = RagoraClient()
+
+# Use the session_id from a previous agentic response
+response = await client.chat(
+    messages=[{"role": "user", "content": "Now compare that with the enterprise plan"}],
+    agentic={"session": True, "session_id": session_id},
+)
+print(response.choices[0].message.content)
+```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient();
+
+// Use the sessionId from a previous agentic response
+const followUp = await client.chat({
+  messages: [{ role: 'user', content: 'Now compare that with the enterprise plan' }],
+  agentic: { session: true, sessionId },
+});
+console.log(followUp.choices[0].message.content);
+```
+
+  </TabItem>
+</Tabs>
+
+### 5) Custom Model & Generation Options
+
+Override the default model and fine-tune generation parameters per request.
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+from ragora import RagoraClient
+
+client = RagoraClient()
+
+response = await client.chat(
+    messages=[
+        {"role": "system", "content": "You are helpful."},
+        {"role": "user", "content": "Summarize the onboarding docs"},
+    ],
+    generation={"model": "google/gemini-2.5-flash", "temperature": 0.7, "max_tokens": 1000},
+    retrieval={"collection": "support-docs", "top_k": 5, "enable_reranker": True},
+)
+print(response.choices[0].message.content)
+print(f"Sources: {len(response.sources)}")
+```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient();
+
+const response = await client.chat({
+  messages: [
+    { role: 'system', content: 'You are helpful.' },
+    { role: 'user', content: 'Summarize the onboarding docs' },
+  ],
+  generation: { model: 'google/gemini-2.5-flash', temperature: 0.7, maxTokens: 1000 },
+  retrieval: { collection: 'support-docs', topK: 5, enableReranker: true },
+});
+console.log(response.choices[0].message.content);
+console.log(`Sources: ${response.sources.length}`);
+```
+
+  </TabItem>
+</Tabs>

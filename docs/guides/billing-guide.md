@@ -5,7 +5,9 @@ sidebar_position: 6
 description: "Manage your plan, credits, and data blocks"
 ---
 
-The Billing page (`/billing`) lets you manage your subscription. Access it by clicking **Billing** in the sidebar.
+Ragora uses a subscription + credits model. Your subscription tier determines storage limits and retrieval capacity, while credits cover chat completions and pay-per-use marketplace access. This page walks through managing your plan, purchasing credits, and adding storage via Data Blocks — all from the **Billing** page in your dashboard.
+
+For a full breakdown of pricing and how billing works, see [Billing & Pricing](/docs/billing).
 
 ---
 

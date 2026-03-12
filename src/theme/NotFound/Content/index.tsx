@@ -90,7 +90,7 @@ export default function NotFoundContent(): React.JSX.Element {
             textDecoration: 'none',
           }}
         >
-          API Reference
+          SDK Reference
         </Link>
       </div>
     </div>

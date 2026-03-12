@@ -5,7 +5,7 @@ sidebar_position: 2
 description: "Recurring sync from external data sources into Ragora workspaces"
 ---
 
-Use **Connectors** when you need recurring sync from external systems into a Ragora workspace.
+Cloud Connectors let you sync content from external data sources — documentation sites, code repositories, cloud storage — directly into a Ragora workspace on a recurring schedule. Once connected, your workspace stays up to date automatically as the source changes. Currently, the **Docs Website** connector (powered by Crawl4AI) is fully available for crawling documentation sites and web pages. Connectors for GitHub, Google Drive, Dropbox, S3, and Notion are coming soon.
 
 ## Connector Sync Lifecycle
 

@@ -5,6 +5,9 @@ sidebar_position: 6
 description: "Credits, subscriptions, and usage"
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 Manage credits, subscriptions, and usage programmatically.
 
 ## Overview
@@ -19,10 +22,6 @@ The Billing API lets you check balances, purchase credits, manage subscriptions,
 
 Check your current credit balance.
 
-```
-GET /v1/credits/balance
-```
-
 #### Response (200)
 
 ```json
@@ -33,21 +32,24 @@ GET /v1/credits/balance
 
 #### Example
 
-```bash
-curl https://api.ragora.app/v1/credits/balance \
-  -H "Authorization: Bearer sk_live_xxx"
-```
+<Tabs>
+  <TabItem value="python" label="Python" default>
 
 ```python
-import requests
-
-response = requests.get(
-    "https://api.ragora.app/v1/credits/balance",
-    headers={"Authorization": "Bearer sk_live_xxx"}
-)
-balance = response.json()["balance_usd"]
-print(f"Balance: ${balance:.2f}")
+balance = await client.get_balance()
+print(f"Balance: ${balance.balance_usd:.2f}")
 ```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+const balance = await client.getBalance();
+console.log(`Balance: $${balance.balanceUsd.toFixed(2)}`);
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
@@ -55,9 +57,9 @@ print(f"Balance: ${balance:.2f}")
 
 View your credit transaction history (last 50 entries).
 
-```
-GET /v1/credits/history
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Response (200)
 
@@ -111,9 +113,9 @@ GET /v1/credits/history
 
 Get platform credit pricing for operations.
 
-```
-GET /v1/credits/pricing
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Response (200)
 
@@ -144,9 +146,9 @@ To purchase credits, use the Ragora dashboard:
 
 List available subscription tiers.
 
-```
-GET /v1/tiers
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 **Note:** This endpoint is public (no authentication required).
 
@@ -192,9 +194,9 @@ GET /v1/tiers
 
 Get details of your active subscription.
 
-```
-GET /v1/billing/subscription
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Response (200)
 
@@ -233,9 +235,9 @@ To subscribe to a paid tier or upgrade your plan, use the Ragora dashboard:
 
 Cancel your subscription at the end of the billing period.
 
-```
-POST /v1/billing/subscription/cancel
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Response (200)
 
@@ -258,9 +260,9 @@ After cancellation, you'll retain access until `current_period_end`, then revert
 
 Check your usage against tier limits.
 
-```
-GET /v1/billing/usage
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Response (200)
 
@@ -284,9 +286,9 @@ GET /v1/billing/usage
 
 Get detailed storage breakdown.
 
-```
-GET /v1/billing/storage-usage
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Response (200)
 
@@ -311,9 +313,9 @@ GET /v1/billing/storage-usage
 
 List marketplace products you have access to.
 
-```
-GET /v1/billing/access
-```
+:::note
+This endpoint is available via the REST API. There is no dedicated SDK method at this time.
+:::
 
 #### Response (200)
 

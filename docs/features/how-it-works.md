@@ -49,9 +49,9 @@ When you upload documents or connect data sources, Ragora processes them through
 
 | Stage | What Happens |
 |-------|--------------|
-| **Parse** | Extract text from PDFs, DOCX, audio, video (via Gemini 2.5 Flash Lite) |
+| **Parse** | Extract text from PDFs, DOCX, and 50+ formats; transcribe audio/video via AI |
 | **Chunk** | Split into semantic passages with CJK-aware sizing |
-| **Embed** | Generate 1024-dim vectors (multilingual E5, 100+ languages) + sparse BM25 |
+| **Embed** | Generate dense vectors (multilingual, 100+ languages) + sparse BM25 |
 | **Extract** | Identify entities (people, orgs, products) for GraphRAG |
 
 ### Supported Formats
@@ -123,7 +123,7 @@ This filtering ensures high-quality context for answer generation.
 
 ## 5. Answer Generation
 
-The top-ranked passages are sent to an LLM (via OpenRouter) with your question:
+The top-ranked passages are sent to an LLM with your question:
 
 - **Grounded responses:** AI answers based on your actual documents
 - **Source citations:** Every answer includes clickable references
@@ -163,7 +163,7 @@ Ragora supports content in **100+ languages** out of the box. No configuration n
 - **South Asian:** Hindi, Nepali, Bengali, Tamil, Telugu, Urdu
 - **Middle Eastern:** Arabic, Hebrew, Turkish, Persian
 - **Southeast Asian:** Thai, Vietnamese, Indonesian, Malay
-- **And many more** — any language supported by the E5 multilingual embedding model
+- **And many more** — any language supported by our multilingual embedding model
 
 ### Cross-Language Search
 
@@ -179,9 +179,9 @@ Because Ragora uses multilingual embeddings, your queries work across language b
 
 | Component | Technology |
 |-----------|------------|
-| **Embeddings** | Multilingual E5 Large Instruct (1024-dim) |
-| **Sparse** | BM25 via FastEmbed |
+| **Embeddings** | Multilingual dense embeddings (100+ languages) |
+| **Sparse** | BM25 lexical search |
 | **Vector DB** | Qdrant with hybrid search |
-| **Reranker** | BGE Reranker v2 M3 |
-| **LLM** | OpenRouter (Gemini Flash, Claude, etc.) |
-| **Processing** | RabbitMQ priority queues |
+| **Reranker** | Cross-encoder reranker |
+| **LLM** | Configurable per organization |
+| **Processing** | Async priority queues |

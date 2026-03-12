@@ -119,6 +119,9 @@ const config: Config = {
         theme: {
           customCss: './src/css/custom.css',
         },
+        gtag: {
+          trackingID: 'G-YQ1D91LCYX',
+        },
       } satisfies Preset.Options,
     ],
   ],
@@ -155,7 +158,7 @@ const config: Config = {
         },
         {
           to: '/docs/api/overview',
-          label: 'API Reference',
+          label: 'SDK Reference',
           position: 'left',
         },
         { to: '/blog', label: 'Blog', position: 'left' },
@@ -178,7 +181,7 @@ const config: Config = {
           title: 'Documentation',
           items: [
             { label: 'Getting Started', to: '/docs/getting-started' },
-            { label: 'API Reference', to: '/docs/api/overview' },
+            { label: 'SDK Reference', to: '/docs/api/overview' },
             { label: 'SDKs', to: '/sdk/getting-started' },
           ],
         },

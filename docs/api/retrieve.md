@@ -5,28 +5,20 @@ sidebar_position: 2
 description: "Search and retrieve from your workspaces"
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 Search your workspaces using natural language queries.
 
 ## Overview
 
 The Retrieve API performs hybrid search (semantic + lexical) across your collections and returns the most relevant document chunks with metadata.
 
-```
-POST /v1/retrieve
-```
-
 ---
 
 ## Request
 
-### Headers
-
-| Header | Required | Description |
-|--------|----------|-------------|
-| `Authorization` | Yes | `Bearer sk_live_xxx` |
-| `Content-Type` | Yes | `application/json` |
-
-### Body Parameters
+### Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -245,128 +237,314 @@ Filter results based on extracted entities:
 
 ### Basic Search
 
-```bash
-curl -X POST https://api.ragora.app/v1/retrieve \
-  -H "Authorization: Bearer sk_live_xxx" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "query": "How do I reset my password?",
-    "top_k": 5
-  }'
-```
-
-### Search Specific Collections
-
-```bash
-curl -X POST https://api.ragora.app/v1/retrieve \
-  -H "Authorization: Bearer sk_live_xxx" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "query": "authentication setup",
-    "collection_ids": ["docs-v2", "coll_abc123"],
-    "top_k": 10
-  }'
-```
-
-### Filter by Source Type
-
-```bash
-curl -X POST https://api.ragora.app/v1/retrieve \
-  -H "Authorization: Bearer sk_live_xxx" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "query": "API rate limits",
-    "source_type": ["github", "upload"],
-    "domain": ["software_docs", "code"],
-    "top_k": 5
-  }'
-```
-
-### Search with Entity Filter
-
-```bash
-curl -X POST https://api.ragora.app/v1/retrieve \
-  -H "Authorization: Bearer sk_live_xxx" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "query": "project status update",
-    "graph_filter": {
-      "entities": ["Project Alpha", "Q4 2024"],
-      "entity_type": "CONCEPT"
-    },
-    "top_k": 10
-  }'
-```
-
-### Python Example
+<Tabs>
+  <TabItem value="python" label="Python" default>
 
 ```python
-import requests
+import asyncio
+from ragora import RagoraClient
 
-def search_documents(query: str, collections: list = None, top_k: int = 5):
-    response = requests.post(
-        "https://api.ragora.app/v1/retrieve",
-        headers={
-            "Authorization": "Bearer sk_live_xxx",
-            "Content-Type": "application/json"
-        },
-        json={
-            "query": query,
-            "collection_ids": collections,
-            "top_k": top_k,
-            "enable_reranker": True
-        }
-    )
-    response.raise_for_status()
-    return response.json()
+async def main():
+    async with RagoraClient(api_key="sk_live_xxx") as client:
+        results = await client.search(
+            query="How do I reset my password?",
+            top_k=5,
+        )
+        for r in results.results:
+            print(f"[{r.score:.2f}] {r.content[:200]}")
 
-# Search all collections
-results = search_documents("What is the refund policy?")
-
-# Print results with scores
-for result in results["results"]:
-    print(f"[{result['score']:.2f}] {result['metadata']['filename']}")
-    print(f"  {result['text'][:200]}...")
-    print()
+asyncio.run(main())
 ```
 
-### JavaScript Example
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
 
-```javascript
-async function searchDocuments(query, options = {}) {
-  const response = await fetch("https://api.ragora.app/v1/retrieve", {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer sk_live_xxx",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      query,
-      collection_ids: options.collections,
-      top_k: options.topK || 5,
-      enable_reranker: true
-    })
-  });
+```typescript
+import { RagoraClient } from 'ragora';
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error?.message || "Search failed");
-  }
+const client = new RagoraClient({ apiKey: 'sk_live_xxx' });
 
-  return response.json();
-}
-
-// Usage
-const results = await searchDocuments("How do I configure webhooks?", {
-  collections: ["api-docs"],
-  topK: 10
+const results = await client.search({
+  query: 'How do I reset my password?',
+  topK: 5,
 });
 
 results.results.forEach(r => {
-  console.log(`[${r.score.toFixed(2)}] ${r.metadata.filename}`);
-  console.log(`  ${r.text.slice(0, 200)}...`);
+  console.log(`[${r.score.toFixed(2)}] ${r.content.slice(0, 200)}`);
 });
 ```
+
+  </TabItem>
+</Tabs>
+
+### Search Specific Collections
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+import asyncio
+from ragora import RagoraClient
+
+async def main():
+    async with RagoraClient(api_key="sk_live_xxx") as client:
+        # Search a single collection (by slug, name, or UUID)
+        results = await client.search(
+            query="authentication setup",
+            collection="docs-v2",
+            top_k=10,
+        )
+
+        # Search multiple collections at once
+        results = await client.search(
+            query="authentication setup",
+            collection=["docs-v2", "coll_abc123"],
+            top_k=10,
+        )
+
+        for r in results.results:
+            print(f"[{r.score:.2f}] {r.content[:200]}")
+
+asyncio.run(main())
+```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient({ apiKey: 'sk_live_xxx' });
+
+// Search a single collection (by slug, name, or UUID)
+const results = await client.search({
+  query: 'authentication setup',
+  collection: 'docs-v2',
+  topK: 10,
+});
+
+// Search multiple collections at once
+const multiResults = await client.search({
+  query: 'authentication setup',
+  collection: ['docs-v2', 'coll_abc123'],
+  topK: 10,
+});
+
+results.results.forEach(r => {
+  console.log(`[${r.score.toFixed(2)}] ${r.content.slice(0, 200)}`);
+});
+```
+
+  </TabItem>
+</Tabs>
+
+### Filtered Search
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+import asyncio
+from ragora import RagoraClient
+
+async def main():
+    async with RagoraClient(api_key="sk_live_xxx") as client:
+        results = await client.search(
+            query="API rate limits",
+            source_type=["github", "upload"],
+            domain=["software_docs", "code"],
+            domain_filter_mode="strict",
+            top_k=5,
+        )
+        for r in results.results:
+            print(f"[{r.score:.2f}] {r.content[:200]}")
+
+asyncio.run(main())
+```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient({ apiKey: 'sk_live_xxx' });
+
+const results = await client.search({
+  query: 'API rate limits',
+  sourceType: ['github', 'upload'],
+  domain: ['software_docs', 'code'],
+  domainFilterMode: 'strict',
+  topK: 5,
+});
+
+results.results.forEach(r => {
+  console.log(`[${r.score.toFixed(2)}] ${r.content.slice(0, 200)}`);
+});
+```
+
+  </TabItem>
+</Tabs>
+
+### Entity-Based Search
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+import asyncio
+from ragora import RagoraClient
+
+async def main():
+    async with RagoraClient(api_key="sk_live_xxx") as client:
+        results = await client.search(
+            query="project status update",
+            graph_filter={
+                "entities": ["Project Alpha", "Q4 2024"],
+                "entity_type": "CONCEPT",
+            },
+            top_k=10,
+        )
+        for r in results.results:
+            print(f"[{r.score:.2f}] {r.content[:200]}")
+
+asyncio.run(main())
+```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient({ apiKey: 'sk_live_xxx' });
+
+const results = await client.search({
+  query: 'project status update',
+  graphFilter: {
+    entities: ['Project Alpha', 'Q4 2024'],
+    entity_type: 'CONCEPT',
+  },
+  topK: 10,
+});
+
+results.results.forEach(r => {
+  console.log(`[${r.score.toFixed(2)}] ${r.content.slice(0, 200)}`);
+});
+```
+
+  </TabItem>
+</Tabs>
+
+### Advanced Filters
+
+Use MongoDB-style operators to filter on metadata fields like `page_number`, `file_size`, or `language`.
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+import asyncio
+from ragora import RagoraClient
+
+async def main():
+    async with RagoraClient(api_key="sk_live_xxx") as client:
+        results = await client.search(
+            query="data processing pipeline",
+            collection="engineering-docs",
+            filters={
+                "page_number": {"$gte": 10, "$lte": 50},
+                "language": {"$in": ["en", "es"]},
+            },
+            top_k=5,
+        )
+        for r in results.results:
+            print(f"[{r.score:.2f}] {r.content[:200]}")
+
+asyncio.run(main())
+```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient({ apiKey: 'sk_live_xxx' });
+
+const results = await client.search({
+  query: 'data processing pipeline',
+  collection: 'engineering-docs',
+  filters: {
+    page_number: { $gte: 10, $lte: 50 },
+    language: { $in: ['en', 'es'] },
+  },
+  topK: 5,
+});
+
+results.results.forEach(r => {
+  console.log(`[${r.score.toFixed(2)}] ${r.content.slice(0, 200)}`);
+});
+```
+
+  </TabItem>
+</Tabs>
+
+### Temporal Search
+
+<Tabs>
+  <TabItem value="python" label="Python" default>
+
+```python
+import asyncio
+from ragora import RagoraClient
+
+async def main():
+    async with RagoraClient(api_key="sk_live_xxx") as client:
+        results = await client.search(
+            query="quarterly earnings report",
+            temporal_filter={
+                "since": "2024-01-01T00:00:00Z",
+                "until": "2024-06-01T00:00:00Z",
+                "recency_weight": 0.5,
+                "recency_decay": "exponential",
+                "decay_half_life": 30,
+            },
+            top_k=5,
+        )
+        for r in results.results:
+            print(f"[{r.score:.2f}] {r.content[:200]}")
+
+asyncio.run(main())
+```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { RagoraClient } from 'ragora';
+
+const client = new RagoraClient({ apiKey: 'sk_live_xxx' });
+
+const results = await client.search({
+  query: 'quarterly earnings report',
+  temporalFilter: {
+    since: '2024-01-01T00:00:00Z',
+    until: '2024-06-01T00:00:00Z',
+    recency_weight: 0.5,
+    recency_decay: 'exponential',
+    decay_half_life: 30,
+  },
+  topK: 5,
+});
+
+results.results.forEach(r => {
+  console.log(`[${r.score.toFixed(2)}] ${r.content.slice(0, 200)}`);
+});
+```
+
+  </TabItem>
+</Tabs>
 
 ---
 
@@ -447,6 +625,3 @@ Retrieval is **free** for:
 Retrieval **costs credits** for:
 - Pay-per-use marketplace products (price set by seller)
 
-Cost headers are included in responses:
-- `X-Ragora-Cost-USD`: Cost of this request
-- `X-Ragora-Balance-Remaining-USD`: Your remaining balance

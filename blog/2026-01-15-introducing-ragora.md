@@ -65,7 +65,7 @@ Ready to dive deeper? Check out our documentation:
 - [Discord & Slack Bots](/docs/bots/qa-bots) — deploy AI-powered Q&A bots in your community
 - [MCP Integration](/docs/integrations/mcp-guide) — connect Ragora to Claude Desktop, Cursor, and other AI tools
 - [Marketplace Guide](/docs/marketplace) — learn how to publish and monetize your knowledge
-- [API Reference](/docs/api/overview) — build custom integrations with the Ragora API
+- [SDK Reference](/docs/api/overview) — build custom integrations with the Ragora SDK
 
 ## Get Started
 
